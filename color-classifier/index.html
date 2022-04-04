@@ -1,5 +1,67 @@
 <html>
-	<script src="https://cdn.jsdelivr.net/npm/p5@latest/lib/p5.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.0.0/dist/tf.min.js"></script>
-	<script src="sketch.js"></script>
+	<head>
+		<script src="https://cdn.jsdelivr.net/npm/p5@latest/lib/p5.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.0.0/dist/tf.min.js"></script>
+		<script src="sketch.js"></script>
+		<script src="graph.js"></script>
+		<script src="model.js"></script>
+		<script src="predictor.js"></script>
+	</head>
+	<body>
+		<div id="canvas"></div>
+
+		optimizer:
+		<select id="optimizer" class="training-params">
+			<option value="0" selected>tf.train.sgd</option>
+			<option value="1">tf.train.adam</option>
+			<option value="2">tf.train.adamax</option>
+			<option value="3">tf.train.adadelta</option>
+			<option value="4">tf.train.adagrad</option>
+			<option value="5">tf.train.rmsprop</option>
+		</select>
+		<br />
+
+		number of nodes:
+		<input type="number" value="16" id="nodes" class="training-params" />
+		<br />
+
+		activation function:
+		<select id="activation" class="training-params">
+			<option value="0">sigmoid</option>
+			<option value="1">elu</option>
+			<option value="2">hardSigmoid</option>
+			<option value="3">linear</option>
+			<option value="4">relu</option>
+			<option value="5">relu6</option>
+			<option value="6">selu</option>
+			<option value="7">softmax</option>
+			<option value="8">softplus</option>
+			<option value="9">softsign</option>
+			<option value="10">tanh</option>
+		</select>
+		<br />
+
+		number of epochs:
+		<input type="number" value="50" id="epochs" class="training-params" />
+		<br />
+
+		learning rate:
+		<input
+			type="range"
+			min="0"
+			max="1"
+			value="0.1"
+			step="0.05"
+			id="learning-rate"
+			class="training-params"
+		/>
+		<br />
+
+		<input type="button" value="train" id="train-model" class="training-params" />
+		<br />
+
+		<input type="button" value="start predictor" id="start-model" disabled />
+
+		<input type="color" id="color-picker" disabled hidden />
+	</body>
 </html>
