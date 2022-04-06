@@ -14,8 +14,6 @@ class Predictor {
 			c = Predictor.hexToRgb(c);
 		}
 
-		console.log(c);
-
 		this.color = c;
 	};
 
@@ -27,7 +25,11 @@ class Predictor {
 			tf.tidy(() => {
 				//predict the color lable using the neural network. Get the index with max probability using argMax along axis 1 (the second axis bc its a oneHot tensor -> 2d tensor)
 				let index = model.network
-					.predict(tf.tensor2d([[this.color.r, this.color.g, this.color.b]]))
+					.predict(
+						tf.tensor2d([
+							[this.color.r / 255, this.color.g / 255, this.color.b / 255],
+						])
+					)
 					.argMax(1)
 					.dataSync()[0];
 

@@ -4,6 +4,7 @@ class Model {
 	colorData = null;
 	nodeAmount = 16;
 	epochsAmount = 50;
+	isTrained = false;
 
 	trainingData = {
 		inputs: [],
@@ -93,17 +94,18 @@ class Model {
 		});
 		this.network.add(hidden);
 		this.network.add(output);
+		this.compile();
+	};
+
+	compile = () => {
 		this.network.compile({
 			loss: tf.metrics.categoricalCrossentropy, //function used to calculate the error betweer thwo distribution of probabilities. must be used if output tensor is a oneHot and output activation function is softmax
 			optimizer: Model.optimizerList[this.optimizerIndex](this.learningRate), //default optimizer: sgd
 		});
 	};
 
-	train = () => {
-		isTrained = false;
-		document
-			.getElementsByClassName('training-params')
-			.forEach((el) => (el.disabled = true));
+	train = (onTrainEnd) => {
+		this.isTrained = false;
 
 		this.network
 			.fit(this.trainingData.inputs, this.trainingData.outputs, {
@@ -111,17 +113,43 @@ class Model {
 				shuffle: true, //shuffle the training data on every iteration to improve training
 				validationSplit: 0.1, //Data on which to evaluate the loss and any model metrics at the end of each epoch. here im telling to use 1% of the testing data as valitadion data
 				callbacks: {
-					onTrainBegin: () => console.log('start training'),
-					onTrainEnd: () => console.log('end training'),
+					onTrainEnd,
 					onBatchEnd: (_, logs) => graph.update(null, logs),
 					onEpochEnd: (epoch, logs) => graph.update(epoch + 1, logs),
 				},
 			})
-			.then(({ history }) => {
-				isTrained = true;
-				document
-					.getElementsByClassName('training-params')
-					.forEach((el) => (el.disabled = false));
+			.then(() => {
+				this.isTrained = true;
 			});
+	};
+
+	download = async () => await this.network.save('downloads://my-model');
+
+	load = async (uploadJSONInput, uploadWeightsInput, onLoadEnd) => {
+		this.network = await tf.loadLayersModel(
+			tf.io.browserFiles([uploadJSONInput.files[0], uploadWeightsInput.files[0]])
+		);
+
+		this.nodeAmount = this.network.getConfig().layers[0].config.units;
+		this.activationFIndex = Model.activationFList.indexOf(
+			this.network.getConfig().layers[0].config.activation
+		);
+		this.isTrained = true;
+		this.compile();
+		onLoadEnd();
+	};
+
+	launchTest = (callBack) => {
+		tf.tidy(() => {
+			model.testingData.outputs
+				.argMax(1)
+				.array()
+				.then((testingOutputs) => {
+					let rightPredictionsAmount = Array.from(
+						model.network.predict(model.testingData.inputs).argMax(1).dataSync()
+					).reduce((acc, guess, i) => (guess === testingOutputs[i] ? acc + 1 : acc));
+					callBack(rightPredictionsAmount, testingOutputs.length);
+				});
+		});
 	};
 }

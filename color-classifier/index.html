@@ -9,59 +9,94 @@
 	</head>
 	<body>
 		<div id="canvas"></div>
-
-		optimizer:
-		<select id="optimizer" class="training-params">
-			<option value="0" selected>tf.train.sgd</option>
-			<option value="1">tf.train.adam</option>
-			<option value="2">tf.train.adamax</option>
-			<option value="3">tf.train.adadelta</option>
-			<option value="4">tf.train.adagrad</option>
-			<option value="5">tf.train.rmsprop</option>
-		</select>
 		<br />
+		<fieldset class="training-params">
+			<legend>Import existing model</legend>
+			<label for="upload-json">Select a file json:</label>
+			<input type="file" id="upload-json" />
+			<br />
+			<label for="upload-weights"
+				>Select a file weights (must be named 'my-model.weights.bin'):</label
+			>
+			<input type="file" id="upload-weights" />
+			<br />
+			<input type="button" value="Import" id="import-model" />
+		</fieldset>
 
-		number of nodes:
-		<input type="number" value="16" id="nodes" class="training-params" />
-		<br />
+		<fieldset class="training-params">
+			<legend>Train new/imported model</legend>
+			<span> optimizer: </span>
+			<select id="optimizer">
+				<option value="0" selected>tf.train.sgd</option>
+				<option value="1">tf.train.adam</option>
+				<option value="2">tf.train.adamax</option>
+				<option value="3">tf.train.adadelta</option>
+				<option value="4">tf.train.adagrad</option>
+				<option value="5">tf.train.rmsprop</option>
+			</select>
+			<br />
+			<span> number of nodes: </span>
+			<input type="number" value="16" id="nodes" />
+			<br />
+			<span> activation function: </span>
+			<select id="activation">
+				<option value="0">sigmoid</option>
+				<option value="1">elu</option>
+				<option value="2">hardSigmoid</option>
+				<option value="3">linear</option>
+				<option value="4">relu</option>
+				<option value="5">relu6</option>
+				<option value="6">selu</option>
+				<option value="7">softmax</option>
+				<option value="8">softplus</option>
+				<option value="9">softsign</option>
+				<option value="10">tanh</option>
+			</select>
+			<br />
+			<span> number of epochs: </span>
+			<input type="number" value="50" id="epochs" />
+			<br />
+			<span> learning rate: </span>
+			<input type="range" min="0" max="1" value="0.1" step="0.05" id="learning-rate" />
+			<span id="lr-label">0.1</span>
+			<br />
+			<span> show batches: </span>
+			<select id="show-batch">
+				<option value="false" selected>No</option>
+				<option value="true">Yes (slower training)</option>
+			</select>
+			<br />
+			<input type="button" value="train" id="train-model" />
+			<br />
+			<input type="button" value="Download trained model" id="download-model" disabled />
+			<br />
+		</fieldset>
 
-		activation function:
-		<select id="activation" class="training-params">
-			<option value="0">sigmoid</option>
-			<option value="1">elu</option>
-			<option value="2">hardSigmoid</option>
-			<option value="3">linear</option>
-			<option value="4">relu</option>
-			<option value="5">relu6</option>
-			<option value="6">selu</option>
-			<option value="7">softmax</option>
-			<option value="8">softplus</option>
-			<option value="9">softsign</option>
-			<option value="10">tanh</option>
-		</select>
-		<br />
+		<fieldset class="training-params">
+			<legend>Testing</legend>
+			<input type="button" value="Run trough testing data" id="testing-data" disabled />
+			<span>Right predictions:<span id="right-predictions"></span></span>
+			<br />
+		</fieldset>
 
-		number of epochs:
-		<input type="number" value="50" id="epochs" class="training-params" />
-		<br />
+		<fieldset class="training-params">
+			<legend>Predictor</legend>
+			<label>Model is trained:</label>
+			<select id="is-trained" disabled>
+				<option value="false" selected>No</option>
+				<option value="true">Yes</option>
+			</select>
+			<br />
+			<input type="button" value="start predictor" id="start-model" disabled />
+		</fieldset>
 
-		learning rate:
-		<input
-			type="range"
-			min="0"
-			max="1"
-			value="0.1"
-			step="0.05"
-			id="learning-rate"
-			class="training-params"
-		/>
-		<br />
+		<fieldset class="predictor" style="display: none">
+			<legend>Predictor</legend>
+			<span>Select a color</span>
+			<input type="color" id="color-picker" />
+			<br />
 
-		<input type="button" value="train" id="train-model" class="training-params" />
-		<br />
-
-		<input type="button" value="start predictor" id="start-model" disabled />
-
-		<input type="color" id="color-picker" disabled hidden />
+			<input type="button" value="Re-train" id="retrain-model" />
+		</fieldset>
 	</body>
 </html>
